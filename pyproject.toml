@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mechanistic-cot-faithfulness"
+version = "0.4.0"
+description = "Causal measurement of whether answer-relevant activations are exposed through visible chain of thought"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = [
+  "accelerate>=1.0",
+  "datasets>=3.0,<5",
+  "PyYAML>=6.0",
+  "torch>=2.4",
+  "transformers>=4.51.0,<6",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.9",
+]
+
+[project.scripts]
+cot-faithfulness-screen = "cot_faithfulness.cli:main"
+cot-faithfulness-text-mediation = "cot_faithfulness.text_mediation_cli:main"
+cot-faithfulness-mechanistic-smoke = "cot_faithfulness.mechanistic_smoke_cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

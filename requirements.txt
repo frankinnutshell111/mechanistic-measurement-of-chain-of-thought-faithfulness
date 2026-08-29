@@ -1,0 +1,7 @@
+# Runtime dependencies. For editable installs, prefer: pip install -e .
+accelerate>=1.0
+datasets>=3.0,<5
+PyYAML>=6.0
+torch>=2.4
+transformers>=4.51.0,<6
+
