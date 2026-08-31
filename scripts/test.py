@@ -40,6 +40,8 @@ formatted_prompt = tokenizer.apply_chat_template(
 )
 input_tokens = tokenizer.encode(formatted_prompt, add_special_tokens=False)
 
+print("start_generating")
+
 # 4. Execute standard generation & decision logit extraction
 results = generate_choice_logits(
     model=model,
@@ -50,8 +52,8 @@ results = generate_choice_logits(
 )
 
 # 5. Output results
-print("=== Generated Chain-of-Thought & Answer ===")
-print(results["full_tokens"])
+print("=== Generated token list ===")
+print(tokenizer.convert_ids_to_tokens(results["full_tokens"]))
 
 print("\n=== Target Step Analysis ===")
 print(f"Decision Step Index: {results['decision_step']}")
