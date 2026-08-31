@@ -1,9 +1,8 @@
 import torch
 import random
 import numpy as np
-import torch
-
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
 from src.cot_faithfulness.three_runs import generate_choice_logits
 from src.cot_faithfulness.three_runs import patch_and_generate_choice_logits
 from src.cot_faithfulness.three_runs import teacher_forced_patch_and_generate
