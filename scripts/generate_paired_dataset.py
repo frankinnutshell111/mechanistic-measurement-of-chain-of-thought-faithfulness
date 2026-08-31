@@ -100,16 +100,25 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
         max_new_tokens=1024
     )
 
-    output = {
-        "id": data["id"],
-        "prompt": data["prompt"],
-        "answerKey": data["answerKey"],
-        "results": results,
-        "hinted_results": hinted_results,
-    }
-    
-    file.write(json.dumps(output, ensure_ascii=False) + "\n")
-    file.flush()
+    if results["chosen_answer_token"] != hinted_results["chosen_answer_token"]:
+        output = {
+            "id": data["id"],
+            "prompt": data["prompt"],
+            "answerKey": data["answerKey"],
+            "results": {
+                key: value
+                for key, value in results.items()
+                if key not in {"full_tokens", "prompt_tokens"}
+            },
+            "hinted_results": {
+                key: value
+                for key, value in hinted_results.items()
+                if key not in {"full_tokens", "prompt_tokens"}
+            },
+        }
+
+        file.write(json.dumps(output, ensure_ascii=False) + "\n")
+        file.flush()
 
 
 #End iteration
