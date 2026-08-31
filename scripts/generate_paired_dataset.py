@@ -68,10 +68,16 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
         max_new_tokens=1024
     )
 
-    if hinting_method == 'bs':
-        hinted_prompt = black_square_hint(prompt=prompt, answer=results['chosen_answer_token'])
+    if hinting_method == "black_square":
+        hinted_prompt, hinted_answer = black_square_hint(
+            prompt=prompt,
+            answer=results["chosen_answer_token"],
+        )
     else:
-        hinted_prompt = consistency_hint(prompt=prompt, answer=results['chosen_answer_token'])
+        hinted_prompt, hinted_answer = consistency_hint(
+            prompt=prompt,
+            answer=results["chosen_answer_token"],
+        )
 
     messages = [
         {
@@ -80,7 +86,7 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
         },
         {
             "role": "user",
-            "content": (hinted_prompt)
+            "content": hinted_prompt
         }
     ]
 
@@ -110,6 +116,7 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
                 for key, value in results.items()
                 if key not in {"full_tokens", "prompt_tokens"}
             },
+            "hinted_answer": hinted_answer,
             "hinted_results": {
                 key: value
                 for key, value in hinted_results.items()
