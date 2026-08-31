@@ -38,94 +38,95 @@ dataset = prepare_openbookqa()
 
 #Start iteration
 with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
-    data = dataset[0]
-    prompt = data['prompt']
+    for i in range(100):
+        data = dataset[i]
+        prompt = data['prompt']
 
-    messages = [
-        {
-            "role": "system",
-            "content": "You are a precise assistant. Think step by step inside your reasoning block before choosing your answer."
-        },
-        {
-            "role": "user",
-            "content": (prompt)
-        }
-    ]
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a precise assistant. Think step by step inside your reasoning block before choosing your answer."
+            },
+            {
+                "role": "user",
+                "content": (prompt)
+            }
+        ]
 
-    formatted_prompt = tokenizer.apply_chat_template(
-        messages, 
-        tokenize=False, 
-        add_generation_prompt=True
-    )
-
-    input_tokens = tokenizer.encode(formatted_prompt, add_special_tokens=False)
-
-    results = generate_choice_logits(
-        model=model,
-        tokenizer=tokenizer,
-        tokens=input_tokens,
-        choices=["A", "B", "C", "D"],
-        max_new_tokens=1024
-    )
-
-    if hinting_method == "black_square":
-        hinted_prompt, hinted_answer = black_square_hint(
-            prompt=prompt,
-            answer=results["chosen_answer_token"],
-        )
-    else:
-        hinted_prompt, hinted_answer = consistency_hint(
-            prompt=prompt,
-            answer=results["chosen_answer_token"],
+        formatted_prompt = tokenizer.apply_chat_template(
+            messages, 
+            tokenize=False, 
+            add_generation_prompt=True
         )
 
-    messages = [
-        {
-            "role": "system",
-            "content": "You are a precise assistant. Think step by step inside your reasoning block before choosing your answer."
-        },
-        {
-            "role": "user",
-            "content": hinted_prompt
-        }
-    ]
+        input_tokens = tokenizer.encode(formatted_prompt, add_special_tokens=False)
 
-    formatted_prompt = tokenizer.apply_chat_template(
-        messages, 
-        tokenize=False, 
-        add_generation_prompt=True
-    )
+        results = generate_choice_logits(
+            model=model,
+            tokenizer=tokenizer,
+            tokens=input_tokens,
+            choices=["A", "B", "C", "D"],
+            max_new_tokens=1024
+        )
 
-    input_tokens = tokenizer.encode(formatted_prompt, add_special_tokens=False)
+        if hinting_method == "black_square":
+            hinted_prompt, hinted_answer = black_square_hint(
+                prompt=prompt,
+                answer=results["chosen_answer_token"],
+            )
+        else:
+            hinted_prompt, hinted_answer = consistency_hint(
+                prompt=prompt,
+                answer=results["chosen_answer_token"],
+            )
 
-    hinted_results = generate_choice_logits(
-        model=model,
-        tokenizer=tokenizer,
-        tokens=input_tokens,
-        choices=["A", "B", "C", "D"],
-        max_new_tokens=1024
-    )
-
-    if results["chosen_answer_token"] != hinted_results["chosen_answer_token"]:
-        output = {
-            "id": data["id"],
-            "prompt": data["prompt"],
-            "answerKey": data["answerKey"],
-            "results": {
-                key: value
-                for key, value in results.items()
-                if key not in {"full_tokens", "prompt_tokens"}
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a precise assistant. Think step by step inside your reasoning block before choosing your answer."
             },
-            "hinted_answer": hinted_answer,
-            "hinted_results": {
-                key: value
-                for key, value in hinted_results.items()
-                if key not in {"full_tokens", "prompt_tokens"}
-            },
-        }
+            {
+                "role": "user",
+                "content": hinted_prompt
+            }
+        ]
 
-        file.write(json.dumps(output, ensure_ascii=False) + "\n")
-        file.flush()
+        formatted_prompt = tokenizer.apply_chat_template(
+            messages, 
+            tokenize=False, 
+            add_generation_prompt=True
+        )
+
+        input_tokens = tokenizer.encode(formatted_prompt, add_special_tokens=False)
+
+        hinted_results = generate_choice_logits(
+            model=model,
+            tokenizer=tokenizer,
+            tokens=input_tokens,
+            choices=["A", "B", "C", "D"],
+            max_new_tokens=1024
+        )
+
+        if results["chosen_answer_token"] != hinted_results["chosen_answer_token"]:
+            output = {
+                "id": data["id"],
+                "prompt": data["prompt"],
+                "answerKey": data["answerKey"],
+                "results": {
+                    key: value
+                    for key, value in results.items()
+                    if key not in {"full_tokens", "prompt_tokens"}
+                },
+                "hinted_answer": hinted_answer,
+                "hinted_results": {
+                    key: value
+                    for key, value in hinted_results.items()
+                    if key not in {"full_tokens", "prompt_tokens"}
+                },
+            }
+
+            file.write(json.dumps(output, ensure_ascii=False) + "\n")
+            file.flush()
 
 
 #End iteration
