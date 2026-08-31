@@ -23,12 +23,15 @@ def set_deterministic(seed: int = 42):
 set_deterministic(42)
 
 # 1. Load model and tokenizer
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+dtype = torch.bfloat16 if device.startswith("cuda") else torch.float32
+
 model_id = "Qwen/Qwen3-14B"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(
     model_id,
-    torch_dtype=torch.bfloat16,
-    device_map="auto"
+    torch_dtype=dtype,
+    device_map={"": device}
 )
 
 # 2. Construct a mathematical reasoning MCQ prompt

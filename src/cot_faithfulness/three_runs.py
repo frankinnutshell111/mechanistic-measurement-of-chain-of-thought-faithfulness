@@ -114,7 +114,7 @@ def patch_and_generate_choice_logits(
         "target_logits": target_logits,
         "choice_log_probs": choice_log_probs,
         "generated_text": tokenizer.decode(generated_token_ids),
-        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]])
+        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]]).strip()
     }
 
 def teacher_forced_patch_and_generate(
@@ -221,14 +221,10 @@ def teacher_forced_patch_and_generate(
         choice_log_probs[choice] = max(target_log_probs[t_id].item() for t_id in token_ids)
 
     return {
-        "full_tokens": current_input_ids[0].tolist(),
-        "teacher_forced_prefix_tokens": tokens,
-        "newly_generated_tokens": generated_token_ids,
         "decoded_prompt_and_completion": tokenizer.decode(current_input_ids[0]),
-        "decoded_completion": tokenizer.decode(generated_token_ids),
         "decision_step_in_generation": target_step_idx,
         "choice_log_probs": choice_log_probs,
-        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]])
+        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]]).strip()
     }
 
 def generate_choice_logits(
@@ -307,5 +303,5 @@ def generate_choice_logits(
         "generated_text": tokenizer.decode(generated_token_ids),       # Generated tokens only
         "decision_step": target_step_idx,
         "choice_log_probs": choice_log_probs,
-        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]])
+        "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]]).strip()
     }
