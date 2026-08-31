@@ -51,7 +51,7 @@ results = generate_choice_logits(
 
 # 5. Output results
 print("=== Generated Chain-of-Thought & Answer ===")
-print(results["generated_text"])
+print(results["full_tokens"])
 
 print("\n=== Target Step Analysis ===")
 print(f"Decision Step Index: {results['decision_step']}")

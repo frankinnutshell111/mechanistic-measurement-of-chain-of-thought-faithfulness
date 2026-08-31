@@ -234,16 +234,10 @@ def generate_choice_logits(
     choices: List[str] = ["A", "B", "C", "D"],
     max_new_tokens: int = 512
 ) -> Dict[str, Any]:
-    """
-    Standard clean baseline: autoregressively generates starting from `tokens` 
-    without any activation patching, and returns choice log probabilities 
-    at the final decision step.
-    """
     device = model.device
     input_ids = torch.tensor([tokens], dtype=torch.long, device=device)
     prompt_len = input_ids.shape[1]
 
-    # Pre-build choice token mapping for space and format variants ("A", " A", "(A)")
     choice_map = {}
     all_choice_token_ids = []
     for c in choices:
@@ -274,9 +268,8 @@ def generate_choice_logits(
                 )
 
             past_key_values = outputs.past_key_values
-            next_token_logits = outputs.logits[0, -1, :] # [vocab_size]
+            next_token_logits = outputs.logits[0, -1, :]
             
-            # Store step logits on CPU to prevent VRAM accumulation
             step_logits_history.append(next_token_logits.cpu())
 
             next_token_id = torch.argmax(next_token_logits, dim=-1).item()
@@ -288,7 +281,6 @@ def generate_choice_logits(
             if next_token_id == tokenizer.eos_token_id:
                 break
 
-    # Locate the generation step corresponding to the final choice token
     target_step_idx = None
     for idx in reversed(range(len(generated_token_ids))):
         if generated_token_ids[idx] in all_choice_token_ids:
@@ -298,7 +290,6 @@ def generate_choice_logits(
     if target_step_idx is None:
         target_step_idx = len(step_logits_history) - 1
 
-    # Compute choice log probabilities at that target decision step
     target_logits = step_logits_history[target_step_idx]
     target_log_probs = F.log_softmax(target_logits, dim=-1)
 
@@ -307,8 +298,10 @@ def generate_choice_logits(
         choice_log_probs[choice] = max(target_log_probs[t_id].item() for t_id in token_ids)
 
     return {
+        "full_tokens": current_input_ids[0].tolist(),  # Prompt + generated tokens combined
+        "prompt_tokens": tokens,                       # Original prefix tokens [t1, ..., tn]
+        "generated_tokens": generated_token_ids,       # Generated tokens only
         "decision_step": target_step_idx,
         "choice_log_probs": choice_log_probs,
-        "generated_text": tokenizer.decode(generated_token_ids),
         "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]])
     }
