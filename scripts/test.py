@@ -1,6 +1,27 @@
 import torch
+import random
+import numpy as np
+import torch
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from src.cot_faithfulness.three_runs import generate_choice_logits
+from src.cot_faithfulness.three_runs import patch_and_generate_choice_logits
+from src.cot_faithfulness.three_runs import teacher_forced_patch_and_generate
+from src.cot_faithfulness.reasoning_segmentation import find_cot_segment_indices
+from src.cot_faithfulness.perturbations import create_gaussian_perturbation
+
+
+def set_deterministic(seed: int = 42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    
+    # Enforce deterministic CUDA algorithms
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+set_deterministic(42)
 
 # 1. Load model and tokenizer
 model_id = "Qwen/Qwen3-14B"
@@ -48,12 +69,75 @@ results = generate_choice_logits(
     tokenizer=tokenizer,
     tokens=input_tokens,
     choices=["A", "B", "C", "D"],
-    max_new_tokens=512
+    max_new_tokens=1024
 )
 
+token_ids = results["full_tokens"]
+CoT_boundaries = find_cot_segment_indices(tokenizer, token_ids)
+segment_boundary_indices = CoT_boundaries["segment_boundary_indices"]
+
+patch_positions_list = [range(segment_boundary_indices[idx]+1, segment_boundary_indices[idx+1]+1) for idx in range(len(CoT_boundaries))]
+
+
+#Start Iteration
+patch_position = patch_positions_list[0]
+
+deltas = create_gaussian_perturbation(
+    num_patch_positions=len(patch_position),
+    hidden_size=model.config.hidden_size, # 5120
+    std=10,                             # Adjust scale relative to activation norms
+    dtype=model.dtype,                    # torch.bfloat16
+    device=model.device
+)
+
+prefix = token_ids[:segment_boundary_indices[1]+1]
+
+print("generating patched 1")
+
+patch_gen_res1 = patch_and_generate_choice_logits(
+    model=model,
+    tokenizer=tokenizer,
+    prefix_tokens=prefix,
+    patch_positions=patch_position,
+    layer_idx=16,
+    deltas=deltas
+)
+
+print("generating patched 2")
+
+prefix = token_ids[:segment_boundary_indices[-1]+1]
+
+patch_gen_res2 = teacher_forced_patch_and_generate(
+    model=model,
+    tokenizer=tokenizer,
+    tokens=prefix,
+    patch_positions=patch_position,
+    layer_idx=16,
+    deltas=deltas
+
+)
+
+print("=== teacher patch logits ===")
+print(patch_gen_res2["decoded_prompt_and_completion"])
+
+print("\n=== Target Step Analysis ===")
+print(f"Decision Step Index: {patch_gen_res2['decision_step_in_generation']}")
+print(f"Identified Answer Token: {patch_gen_res2['chosen_answer_token']!r}")
+
+print("=== Generated text patched===")
+print(patch_gen_res1["generated_text"])
+
+print("\n=== Target Step Analysis ===")
+print(f"Decision Step Index: {patch_gen_res1['decision_step']}")
+print(f"Identified Answer Token: {patch_gen_res1['chosen_answer_token']!r}")
+
+#End Iteration
+
 # 5. Output results
-print("=== Generated token list ===")
-print(tokenizer.convert_ids_to_tokens(results["full_tokens"]))
+
+
+print("=== Generated text unpatched===")
+print(results["generated_text"])
 
 print("\n=== Target Step Analysis ===")
 print(f"Decision Step Index: {results['decision_step']}")
