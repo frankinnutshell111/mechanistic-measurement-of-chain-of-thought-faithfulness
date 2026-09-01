@@ -280,6 +280,7 @@ def generate_choice_logits(
     return {
         "full_tokens": current_input_ids[0].tolist(),
         "prompt_tokens": tokens,
+        "generated_tokens": generated_token_ids,
         "decision_step": target_step_idx,
         "choice_log_probs": choice_log_probs,
         "chosen_answer_token": tokenizer.decode([generated_token_ids[target_step_idx]]).strip()

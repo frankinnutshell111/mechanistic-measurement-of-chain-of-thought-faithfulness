@@ -37,7 +37,7 @@ model = AutoModelForCausalLM.from_pretrained(
 dataset = prepare_openbookqa()
 
 #Start iteration
-with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
+with open("results/paired_dataset2.jsonl", "w", encoding="utf-8") as file:
     for i in range(100):
         data = dataset[i]
         prompt = data['prompt']
