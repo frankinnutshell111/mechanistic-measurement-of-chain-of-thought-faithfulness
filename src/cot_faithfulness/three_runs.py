@@ -210,7 +210,7 @@ def generate_choice_logits(
     tokenizer,
     tokens: List[int],
     choices: List[str] = ["A", "B", "C", "D"],
-    max_new_tokens: int = 512
+    max_new_tokens: int = 2048
 ) -> Dict[str, Any]:
     device = model.device
     input_ids = torch.tensor([tokens], dtype=torch.long, device=device)
