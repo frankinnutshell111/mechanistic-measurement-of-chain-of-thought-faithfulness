@@ -41,6 +41,7 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
     for i in range(100):
         data = dataset[i]
         prompt = data['prompt']
+        print(f"processing {data["id"]}")
 
         messages = [
             {
@@ -68,6 +69,8 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
             choices=["A", "B", "C", "D"],
             max_new_tokens=1024
         )
+
+        print(results["chosen_answer_token"])
 
         if hinting_method == "black_square":
             hinted_prompt, hinted_answer = black_square_hint(
