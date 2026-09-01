@@ -23,15 +23,14 @@ dataset = prepare_openbookqa()
 data = dataset.filter(lambda example: example['id'] == id)[0]
 del dataset
 
-with open("results/mechanistic/paired_dataset1.jsonl", "r", encoding="utf-8") as file:
+with open("results/paired_dataset1.jsonl", "r", encoding="utf-8") as file:
     paired_data = [json.loads(line) for line in file]
+
 
 for line in paired_data:
     if line['id'] == id:
         record = line
         break
-
-del paired_data
 
 prompt = data['prompt']
 hinted_answer = record['hinted_answer']
@@ -98,7 +97,7 @@ segment_boundary_indices = CoT_boundaries["segment_boundary_indices"]
 
 patch_positions_list = [range(segment_boundary_indices[idx]+1, segment_boundary_indices[idx+1]+1) for idx in range(len(CoT_boundaries))]
 
-with open(f"results/result_{id}_faithful.jsonl", "w", encoding="utf-8") as file:
+with open(f"results/mechanistic/result_{id}_faithful.jsonl", "w", encoding="utf-8") as file:
     for layer in layers:
         for i in range(len(patch_positions_list)):
             print(f"Total segments number: {len(patch_positions_list)}")
@@ -187,7 +186,7 @@ segment_boundary_indices = CoT_boundaries["segment_boundary_indices"]
 
 patch_positions_list = [range(segment_boundary_indices[idx]+1, segment_boundary_indices[idx+1]+1) for idx in range(len(segment_boundary_indices)-1)]
 
-with open(f"results/result_{id}_unfaithful.jsonl", "w", encoding="utf-8") as file:
+with open(f"results/mechanistic/result_{id}_unfaithful.jsonl", "w", encoding="utf-8") as file:
     for layer in layers:
         for i in range(len(patch_positions_list)):
             print(f"Total segments number: {len(patch_positions_list)}")
@@ -241,6 +240,6 @@ with open(f"results/result_{id}_unfaithful.jsonl", "w", encoding="utf-8") as fil
 
 print("=== unpatched ===")
 print("generated_texts")
-print(results["generated_text"])
+print(tokenizer.decode(results["generated_tokens"]))
 print(f"Identified Answer Token: {results['chosen_answer_token']!r}")
 print(f"log probabilities: {results["choice_log_probs"]}")
