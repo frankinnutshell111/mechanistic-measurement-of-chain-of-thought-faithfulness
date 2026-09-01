@@ -28,7 +28,7 @@ with open(JSONL_PATH, "r", encoding="utf-8") as file:
 
         print(f"RECORD {index} | ID: {data['id']}")
         print("\nOriginal generation:\n")
-        print(decode_generated_text(tokenizer, data["results"]['generated_tokens']))
+        print(decode_generated_text(tokenizer, data["results"]))
         print("\nHinted generation:\n")
-        print(decode_generated_text(tokenizer, data["hinted_results"]['generated_tokens']))
+        print(decode_generated_text(tokenizer, data["hinted_results"]))
         print("\n" + "=" * 100 + "\n")
