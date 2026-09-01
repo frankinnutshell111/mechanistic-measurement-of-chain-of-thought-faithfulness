@@ -95,7 +95,7 @@ token_ids = results["full_tokens"]
 CoT_boundaries = find_cot_segment_indices(tokenizer, token_ids)
 segment_boundary_indices = CoT_boundaries["segment_boundary_indices"]
 
-patch_positions_list = [range(segment_boundary_indices[idx]+1, segment_boundary_indices[idx+1]+1) for idx in range(len(CoT_boundaries))]
+patch_positions_list = [range(segment_boundary_indices[idx]+1, segment_boundary_indices[idx+1]+1) for idx in range(len(segment_boundary_indices)-1)]
 
 with open(f"results/mechanistic/result_{id}_faithful.jsonl", "w", encoding="utf-8") as file:
     for layer in layers:
