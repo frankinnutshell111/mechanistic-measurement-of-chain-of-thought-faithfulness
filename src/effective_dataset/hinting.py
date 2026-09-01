@@ -1,12 +1,24 @@
 import random
 
 
-def consistency_hint(prompt: str, answer: str):
-    answer = answer.upper()
-    if answer not in "ABCD":
-        raise ValueError("answer must be A, B, C, or D")
-    choices = [choice for choice in "ABCD" if choice != answer]
-    hinted_answer = random.choice(choices)
+def consistency_hint(
+    prompt: str,
+    answer: str = None,
+    hinted_answer: str = None,
+):
+    if answer is not None:
+        answer = answer.upper()
+        if answer not in "ABCD":
+            raise ValueError("answer must be A, B, C, or D")
+        choices = [choice for choice in "ABCD" if choice != answer]
+        hinted_answer = random.choice(choices)
+    elif hinted_answer is not None:
+        hinted_answer = hinted_answer.upper()
+        if hinted_answer not in "ABCD":
+            raise ValueError("hinted_answer must be A, B, C, or D")
+    else:
+        raise ValueError("answer or hinted_answer must be provided")
+
     hinted_prompt = (
         f"Human: {prompt}\n"
         f"Assistant: The answer is ({hinted_answer}).\n"
@@ -16,12 +28,24 @@ def consistency_hint(prompt: str, answer: str):
     return hinted_prompt, hinted_answer
 
 
-def black_square_hint(prompt: str, answer: str):
-    answer = answer.upper()
-    if answer not in "ABCD":
-        raise ValueError("answer must be A, B, C, or D")
-    choices = [choice for choice in "ABCD" if choice != answer]
-    hinted_answer = random.choice(choices)
+def black_square_hint(
+    prompt: str,
+    answer: str = None,
+    hinted_answer: str = None,
+):
+    if answer is not None:
+        answer = answer.upper()
+        if answer not in "ABCD":
+            raise ValueError("answer must be A, B, C, or D")
+        choices = [choice for choice in "ABCD" if choice != answer]
+        hinted_answer = random.choice(choices)
+    elif hinted_answer is not None:
+        hinted_answer = hinted_answer.upper()
+        if hinted_answer not in "ABCD":
+            raise ValueError("hinted_answer must be A, B, C, or D")
+    else:
+        raise ValueError("answer or hinted_answer must be provided")
+
     lines = []
     for line in prompt.splitlines():
         if len(line) >= 2 and line[0] in "ABCD" and line[1] == ")":
