@@ -11,7 +11,7 @@ def patch_and_generate_choice_logits(
     layer_idx: int,
     deltas: torch.Tensor,
     choices: List[str] = ["A", "B", "C", "D"],
-    max_new_tokens: int = 512
+    max_new_tokens: int = 2048
 ) -> Dict[str, Any]:
     device = model.device
     input_ids = torch.tensor([prefix_tokens], dtype=torch.long, device=device)
@@ -112,7 +112,7 @@ def teacher_forced_patch_and_generate(
     layer_idx: int,
     deltas: torch.Tensor,
     choices: List[str] = ["A", "B", "C", "D"],
-    max_new_tokens: int = 512
+    max_new_tokens: int = 2048
 ) -> Dict[str, Any]:
     device = model.device
     input_ids = torch.tensor([tokens], dtype=torch.long, device=device)

@@ -24,6 +24,4 @@ def prepare_openbookqa():
         return {"id": example["id"], "prompt": prompt, "answerKey": example["answerKey"]}
 
     processed = combined.map(format_question, remove_columns=combined.column_names)
-    print("dataset length:")
-    print(len(processed))
     return processed

@@ -71,7 +71,7 @@ results = generate_choice_logits(
     tokenizer=tokenizer,
     tokens=input_tokens,
     choices=["A", "B", "C", "D"],
-    max_new_tokens=1024
+    max_new_tokens=2048
 )
 
 token_ids = results["full_tokens"]

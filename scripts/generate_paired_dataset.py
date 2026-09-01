@@ -67,7 +67,7 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
             tokenizer=tokenizer,
             tokens=input_tokens,
             choices=["A", "B", "C", "D"],
-            max_new_tokens=1024
+            max_new_tokens=2048
         )
 
         print(results["chosen_answer_token"])
@@ -107,7 +107,7 @@ with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
             tokenizer=tokenizer,
             tokens=input_tokens,
             choices=["A", "B", "C", "D"],
-            max_new_tokens=1024
+            max_new_tokens=2048
         )
 
         if results["chosen_answer_token"] != hinted_results["chosen_answer_token"]:
