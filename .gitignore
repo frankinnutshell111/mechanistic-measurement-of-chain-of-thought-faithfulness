@@ -9,3 +9,5 @@ dist/
 
 # Generated model caches.
 .cache/
+results/mechanistic/
+results/score/
