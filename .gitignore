@@ -7,11 +7,5 @@ __pycache__/
 build/
 dist/
 
-# Generated research artifacts and model caches.
-results/**
-!results/.gitkeep
-!results/screening/
-!results/screening/.gitkeep
-!results/text_mediation/
-!results/text_mediation/.gitkeep
+# Generated model caches.
 .cache/
