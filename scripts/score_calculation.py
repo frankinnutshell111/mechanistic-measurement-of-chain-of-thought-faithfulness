@@ -2,13 +2,18 @@ import json
 
 id = "9-732"
 
-faithful_file_path = f"results/mechanistic/result_{id}_faithful_5_layers.jsonl"
-unfaithful_file_path = f"results/mechanistic/result_{id}_unfaithful_5_layers.jsonl"
+faithful_file_path = f"results/mechanistic/result_{id}_faithful1.jsonl"
+unfaithful_file_path = f"results/mechanistic/result_{id}_unfaithful1.jsonl"
+
+def target_choice_variation_abs(o_log_p, p_log_p, target):
+    o_logit = o_log_p[target]
+    p_logit = p_log_p[target]
+    return abs(o_logit - p_logit)
 
 def target_choice_variation(o_log_p, p_log_p, target):
     o_logit = o_log_p[target]
     p_logit = p_log_p[target]
-    return abs(o_logit - p_logit)
+    return o_logit - p_logit
 
 
 with open("results/paired_dataset1.jsonl", "r", encoding="utf-8") as file:
