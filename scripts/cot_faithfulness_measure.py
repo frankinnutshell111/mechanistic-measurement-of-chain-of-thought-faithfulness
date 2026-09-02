@@ -148,6 +148,11 @@ with open(f"results/mechanistic/result_{id}_faithful.jsonl", "w", encoding="utf-
             file.write(json.dumps(output, ensure_ascii=False) + "\n")
             file.flush()
 
+print("generated_texts")
+print(tokenizer.decode(results["generated_tokens"]))
+print(f"Identified Answer Token: {results['chosen_answer_token']!r}")
+print(f"log probabilities: {results["choice_log_probs"]}"
+
 
 #running CoT faithfulness analysis on unfaithful prompt
 
@@ -238,7 +243,6 @@ with open(f"results/mechanistic/result_{id}_unfaithful.jsonl", "w", encoding="ut
             file.flush()
 
 
-print("=== unpatched ===")
 print("generated_texts")
 print(tokenizer.decode(results["generated_tokens"]))
 print(f"Identified Answer Token: {results['chosen_answer_token']!r}")
