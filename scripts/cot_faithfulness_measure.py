@@ -14,7 +14,7 @@ from src.effective_dataset.hinting import black_square_hint
 from src.effective_dataset.hinting import consistency_hint
 
 #Config
-id = "9-732"
+id = "7-969"
 layers = [10, 20, 30]
 patching = "Gaussian"
 
