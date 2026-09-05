@@ -38,6 +38,7 @@ dataset = prepare_openbookqa()
 
 #Start iteration
 with open("results/paired_dataset.jsonl", "w", encoding="utf-8") as file:
+    #Select the slice of data
     for i in range(100):
         data = dataset[i]
         prompt = data['prompt']
