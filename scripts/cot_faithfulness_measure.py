@@ -151,7 +151,7 @@ with open(f"results/mechanistic/result_{id}_faithful.jsonl", "w", encoding="utf-
 print("generated_texts")
 print(tokenizer.decode(results["generated_tokens"]))
 print(f"Identified Answer Token: {results['chosen_answer_token']!r}")
-print(f"log probabilities: {results["choice_log_probs"]}"
+print(f"log probabilities: {results["choice_log_probs"]}")
 
 
 #running CoT faithfulness analysis on unfaithful prompt
